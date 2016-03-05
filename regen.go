@@ -28,6 +28,7 @@ import (
 	"math/big"
 	"os"
 	"regexp/syntax"
+	"strings"
 )
 
 // CLI options
@@ -143,7 +144,7 @@ func main() {
 	log.SetFlags(0)
 
 	simplify := flag.Bool("simplify", false, "Whether to simplify the parsed regular expressions. This can produce chains of OpQuest in place of OpRepeat, which are harder to randomize.")
-
+	posix := flag.Bool("posix", false, "Use POSIX syntax instead of Perl-like syntax.")
 	zip := flag.Bool("zip", false, "Whether to interleave patterns or go pattern by pattern.")
 	n := flag.Uint("n", 1, "The `number` of strings to generate per regexp.")
 	flag.IntVar(&unboundMax, "max", unboundMax, "The max `repetitions` to use for unlimited repetitions/matches.")
@@ -154,10 +155,15 @@ func main() {
 		return
 	}
 
+	mode := syntax.Perl
+	if *posix {
+		mode = syntax.POSIX
+	}
+
 	regexen := make([]*syntax.Regexp, flag.NArg())
 	for i, s := range flag.Args() {
 		var err error
-		regexen[i], err = syntax.Parse(s, 0)
+		regexen[i], err = syntax.Parse(s, mode)
 
 		if err != nil {
 			log.Printf("error parsing regular expression %q:\n%v", s, err)
