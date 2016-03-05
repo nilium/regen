@@ -62,13 +62,17 @@ func GenString(w *bytes.Buffer, rx *syntax.Regexp) (err error) {
 	case syntax.OpCharClass:
 		nth := randint(len(rx.Rune)) &^ 1
 		min, max := rx.Rune[nth], rx.Rune[nth+1]
-		ch := min + rune(randint(int(max-min)))
+
+		ch := min
+		if delta := int(max - min); delta != 0 {
+			ch += rune(randint(delta))
+		}
 		w.WriteRune(ch)
 	case syntax.OpAnyCharNotNL:
 		w.WriteRune(rune(' ' + randint(95)))
 	case syntax.OpAnyChar:
 		i := randint(96)
-		ch := rune(' ' + randint(96))
+		ch := rune(' ' + i)
 		if i == 95 {
 			ch = '\n'
 		}
@@ -103,7 +107,7 @@ func GenString(w *bytes.Buffer, rx *syntax.Regexp) (err error) {
 			}
 		}
 	case syntax.OpQuest:
-		if randint(1024)&1 == 1 {
+		if randint(0xFFFFFFFF) > 0x7FFFFFFF {
 			for _, rx := range rx.Sub {
 				if err := GenString(w, rx); err != nil {
 					return err
