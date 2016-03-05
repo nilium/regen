@@ -147,7 +147,7 @@ func main() {
 	flag.IntVar(&unboundMax, "max", unboundMax, "The max `repetitions` to use for unlimited repetitions/matches.")
 	flag.Parse()
 
-	if flag.NArg() != 1 {
+	if flag.NArg() == 0 {
 		log.Println("no regexp given")
 		return
 	}
