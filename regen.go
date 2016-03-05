@@ -1,3 +1,6 @@
+// Copyright 2016 Noel Cower. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be found in the LICENSE.txt file.
+
 // regen is a tool to parse and generate random strings from regular expressions.
 //
 // regen works by parsing a regular expression and walking its op tree. It is currently not guaranteed to produce
