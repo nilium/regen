@@ -105,7 +105,7 @@ func GenString(w *bytes.Buffer, rx *syntax.Regexp) (err error) {
 		}
 		max := min + unboundMax
 
-		for sz := randint(max - min); sz > 0; sz-- {
+		for sz := min + randint(max-min); sz > 0; sz-- {
 			for _, rx := range rx.Sub {
 				GenString(w, rx)
 			}
