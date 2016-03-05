@@ -64,14 +64,21 @@ func GenString(w *bytes.Buffer, rx *syntax.Regexp) (err error) {
 	case syntax.OpLiteral:
 		w.WriteString(string(rx.Rune))
 	case syntax.OpCharClass:
-		nth := randint(len(rx.Rune)) &^ 1
-		min, max := rx.Rune[nth], rx.Rune[nth+1]
-
-		ch := min
-		if delta := int(max - min); delta != 0 {
-			ch += rune(randint(delta))
+		sum := 0
+		for i := 0; i < len(rx.Rune); i += 2 {
+			sum += 1 + int(rx.Rune[i+1]-rx.Rune[i])
 		}
-		w.WriteRune(ch)
+
+		for i, nth := 0, rune(randint(sum)); i < len(rx.Rune); i += 2 {
+			min, max := rx.Rune[i], rx.Rune[i+1]
+			delta := max - min
+			if nth <= delta {
+				w.WriteRune(min + nth)
+				return nil
+			}
+			nth -= 1 + delta
+		}
+		panic("unreachable")
 	case syntax.OpAnyCharNotNL:
 		w.WriteRune(rune(' ' + randint(95)))
 	case syntax.OpAnyChar:
