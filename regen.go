@@ -142,11 +142,30 @@ func GenString(w *bytes.Buffer, rx *syntax.Regexp) (err error) {
 	return nil
 }
 
+const usageText = `
+regen [OPTIONS] <pattern>...
+
+<pattern> must be a valid POSIX- or Perl-compatible RE2 regular expression pattern. RE2's
+regular expression syntax is described at <https://github.com/google/re2/wiki/Syntax>.
+
+Note that when passing -simplify, this can convert {m,n} repetitions into chains of zero-or-one
+repetitions. This can produce less variance in result strings as zero-or-one repetitions are
+essentially a coin toss and will skip nested sub-expressions if the toss fails.
+
+OPTIONS
+-------
+`
+
 func main() {
 	log.SetPrefix("regen: ")
 	log.SetFlags(0)
 
-	simplify := flag.Bool("simplify", false, "Whether to simplify the parsed regular expressions. This can produce chains of OpQuest in place of OpRepeat, which are harder to randomize.")
+	flag.Usage = func() {
+		fmt.Fprintln(os.Stderr, strings.TrimSpace(usageText))
+		flag.PrintDefaults()
+	}
+
+	simplify := flag.Bool("simplify", false, "Whether to simplify the parsed regular expressions.")
 	posix := flag.Bool("posix", false, "Use POSIX syntax instead of Perl-like syntax.")
 	zip := flag.Bool("zip", false, "Whether to interleave patterns or go pattern by pattern.")
 	n := flag.Uint("n", 1, "The `number` of strings to generate per regexp.")
