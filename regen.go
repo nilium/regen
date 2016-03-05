@@ -144,6 +144,8 @@ func main() {
 
 	simplify := flag.Bool("simplify", false, "Whether to simplify the parsed regular expressions. This can produce chains of OpQuest in place of OpRepeat, which are harder to randomize.")
 
+	zip := flag.Bool("zip", false, "Whether to interleave patterns or go pattern by pattern.")
+	n := flag.Uint("n", 1, "The `number` of strings to generate per regexp.")
 	flag.IntVar(&unboundMax, "max", unboundMax, "The max `repetitions` to use for unlimited repetitions/matches.")
 	flag.Parse()
 
@@ -168,18 +170,41 @@ func main() {
 	}
 
 	var b bytes.Buffer
-	for i, rx := range regexen {
-		if i > 0 {
-			fmt.Print("\n")
-			b.Reset()
-		}
+	first := true
+	if *zip {
+		for i := uint(0); i < *n; i++ {
+			for _, rx := range regexen {
+				if !first {
+					fmt.Print("\n")
+					b.Reset()
+				}
+				first = false
 
-		err := GenString(&b, rx)
-		if err != nil && err != io.EOF {
-			log.Printf("Error generating string: %v", err)
-			os.Exit(1)
+				err := GenString(&b, rx)
+				if err != nil && err != io.EOF {
+					log.Printf("Error generating string: %v", err)
+					os.Exit(1)
+				}
+				fmt.Print(b.String())
+			}
 		}
-		fmt.Print(b.String())
+	} else {
+		for _, rx := range regexen {
+			for i := uint(0); i < *n; i++ {
+				if !first {
+					fmt.Print("\n")
+					b.Reset()
+				}
+				first = false
+
+				err := GenString(&b, rx)
+				if err != nil && err != io.EOF {
+					log.Printf("Error generating string: %v", err)
+					os.Exit(1)
+				}
+				fmt.Print(b.String())
+			}
+		}
 	}
 
 	if isTTY() {
