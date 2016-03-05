@@ -48,6 +48,9 @@ func randint(max int) int {
 	return int(res.Int64())
 }
 
+// GenString writes a response that should, ideally, be a match for rx to w, and proceeds to do the same for its
+// sub-expressions where applicable. Returns io.EOF if it encounters OpEndText. This may not be entirely correct
+// behavior for OpEndText handling. Otherwise, returns nil.
 func GenString(w *bytes.Buffer, rx *syntax.Regexp) (err error) {
 	switch rx.Op {
 	case syntax.OpNoMatch:
