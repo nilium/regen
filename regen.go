@@ -1,3 +1,21 @@
+// regen is a tool to parse and generate random strings from regular expressions.
+//
+// regen works by parsing a regular expression and walking its op tree. It is currently not guaranteed to produce
+// entirely accurate results, but will at least try.
+//
+// Currently, word boundaries are not supported (until I decide how best to randomly insert a word boundary character).
+// Using a word boundary op (\b or \B) will currently cause regen to panic.
+//
+// Usage is simple, run pass one or more regular expressions to regen on the command line and it will generate a string
+// from each, printing them in the same order as on the command line (separated by newlines):
+//
+//      $ regen 'foo(-(bar|baz|quux|woop)){4}'
+//      foo-woop-quux-bar-quux
+//
+// So, if you fancy yourself a Javascript weirdo of some variety, you can at least use regen to write code for eBay:
+//
+//      $ regen '!{0,5}\[\](\+(\[\{\}\]|!{0,5}\[(\[\])?\]|\{\}))+'
+//      !![]+[{}]+[{}]+{}+[{}]+{}+{}+[{}]+[{}]+[[]]+!!!![[]]+![]+![]+![]+[{}]+[{}]+{}+!![]+[{}]+!![]
 package main
 
 import (
