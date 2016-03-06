@@ -40,7 +40,9 @@ var verbose bool
 var unboundMax = 32
 
 func randint(max int) int {
-	if max == 0 {
+	if max < 0 {
+		panic("randint: max < 0")
+	} else if max <= 1 {
 		return 0
 	}
 	var bigmax big.Int
