@@ -44,19 +44,19 @@ import (
 var verbose bool
 var unboundMax = 32
 
-func randint(max int) int {
+func randint(max int64) int64 {
 	if max < 0 {
 		panic("randint: max < 0")
 	} else if max <= 1 {
 		return 0
 	}
 	var bigmax big.Int
-	bigmax.SetInt64(int64(max))
+	bigmax.SetInt64(max)
 	res, err := rand.Int(rand.Reader, &bigmax)
 	if err != nil {
 		panic(err)
 	}
-	return int(res.Int64())
+	return res.Int64()
 }
 
 // GenString writes a response that should, ideally, be a match for rx to w, and proceeds to do the same for its
@@ -76,7 +76,7 @@ func GenString(w *bytes.Buffer, rx *syntax.Regexp) (err error) {
 			sum += 1 + int(rx.Rune[i+1]-rx.Rune[i])
 		}
 
-		for i, nth := 0, rune(randint(sum)); i < len(rx.Rune); i += 2 {
+		for i, nth := 0, rune(randint(int64(sum))); i < len(rx.Rune); i += 2 {
 			min, max := rx.Rune[i], rx.Rune[i+1]
 			delta := max - min
 			if nth <= delta {
@@ -89,7 +89,7 @@ func GenString(w *bytes.Buffer, rx *syntax.Regexp) (err error) {
 	case syntax.OpAnyCharNotNL:
 		w.WriteRune(rune(' ' + randint(95)))
 	case syntax.OpAnyChar:
-		i := randint(96)
+		i := int(randint(96))
 		ch := rune(' ' + i)
 		if i == 95 {
 			ch = '\n'
@@ -119,7 +119,7 @@ func GenString(w *bytes.Buffer, rx *syntax.Regexp) (err error) {
 		}
 		max := min + unboundMax
 
-		for sz := min + randint(max-min+1); sz > 0; sz-- {
+		for sz := min + int(randint(int64(max)-int64(min)+1)); sz > 0; sz-- {
 			for _, rx := range rx.Sub {
 				GenString(w, rx)
 			}
@@ -138,7 +138,7 @@ func GenString(w *bytes.Buffer, rx *syntax.Regexp) (err error) {
 		if max == -1 {
 			max = min + unboundMax
 		}
-		for sz := min + randint(max-min+1); sz > 0; sz-- {
+		for sz := min + int(randint(int64(max)-int64(min)+1)); sz > 0; sz-- {
 			for _, rx := range rx.Sub {
 				if err := GenString(w, rx); err != nil {
 					return err
@@ -153,7 +153,7 @@ func GenString(w *bytes.Buffer, rx *syntax.Regexp) (err error) {
 			}
 		}
 	case syntax.OpAlternate:
-		nth := randint(len(rx.Sub))
+		nth := randint(int64(len(rx.Sub)))
 		return GenString(w, rx.Sub[nth])
 	}
 
