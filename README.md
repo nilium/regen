@@ -32,10 +32,10 @@ Some additional information can be found at <https://godoc.org/go.spiff.io/regen
 
 Contributing
 ------------
-Currently, development of regen is happening over at <https://git.spiff.io>. If you'd like to submit
-a patch, please first open an issue on GitHub to discuss what you'd like to do and we can go from
-there. regen does not currently accept pull requests because changes are replicated from Gerrit to
-GitHub, but not vice versa.
+Development of regen is frozen except for bug fixes since it does what I wanted it to do (for the
+most part). My suggestion is to fork it if you have any plans to do more with it, a few others have
+done this (e.g., to turn it into a testing package) to continue it in other directions and that's
+perfectly fine.
 
 
 License
